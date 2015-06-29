@@ -1,0 +1,43 @@
+# NOTE: This program is built with the Borland PowerPack for DOS.
+# This allows the program to run under DOS, as well as Win32 OS's
+# If you don't have this product, simply remove "/ax" from the linker
+# command line, and replace DPMI32.LIB with IMPORT32.LIB in the library list.
+
+.AUTODEPEND
+
+PROJ = PEDUMP
+
+BINDIR = D:\BC45\BIN
+LIBDIR = D:\BC45\LIB
+INCDIR = D:\BC45\INCLUDE
+CC_CFG = $(PROJ).CFG
+
+BCC32   = $(BINDIR)\Bcc32 +$(CC_CFG) 
+TLINK32 = $(BINDIR)\TLink32
+
+OBJS =  PEDUMP.OBJ \
+        COMMON.OBJ \
+        OBJDUMP.OBJ \
+        EXEDUMP.OBJ \
+        DBGDUMP.OBJ \
+        LIBDUMP.OBJ
+
+$(PROJ).exe: $(CC_CFG) $(OBJS)
+  $(TLINK32) @&&|
+ -Tpe -ap -ax -c -x +
+c0x32.obj+
+$(OBJS)
+$(PROJ).EXE
+
+$(LIBDIR)\dpmi32.lib+
+$(LIBDIR)\cw32.lib
+|
+
+.c.obj:
+  $(BCC32) $<
+
+# Compiler configuration file
+$(CC_CFG) : 
+   Copy &&|
+-c -v -I$(INCDIR) -O2 -4 -H=$(PROJ).csm -w -4 -Etasm.exe
+| $@

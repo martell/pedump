@@ -78,7 +78,7 @@ void DumpHeader(PIMAGE_FILE_HEADER pImageFileHeader)
                 pImageFileHeader->NumberOfSections);
     printf("  %-*s%08X -> %s", headerFieldWidth, "TimeDateStamp:",
                 pImageFileHeader->TimeDateStamp,
-                ctime((long *)&pImageFileHeader->TimeDateStamp));
+                ctime((time_t *)&pImageFileHeader->TimeDateStamp));
     printf("  %-*s%08X\n", headerFieldWidth, "PointerToSymbolTable:",
                 pImageFileHeader->PointerToSymbolTable);
     printf("  %-*s%08X\n", headerFieldWidth, "NumberOfSymbols:",
@@ -153,7 +153,9 @@ void DumpOptionalHeader(PIMAGE_OPTIONAL_HEADER optionalHeader)
     printf("  %-*s%X\n", width, "entrypoint RVA",
         optionalHeader->AddressOfEntryPoint);
     printf("  %-*s%X\n", width, "base of code", optionalHeader->BaseOfCode);
+#ifndef _WIN64
     printf("  %-*s%X\n", width, "base of data", optionalHeader->BaseOfData);
+#endif
     printf("  %-*s%X\n", width, "image base", optionalHeader->ImageBase);
 
     printf("  %-*s%X\n", width, "section align",

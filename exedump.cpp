@@ -93,7 +93,7 @@ void DumpImportsSection(DWORD base, PIMAGE_NT_HEADERS pNTHeader)
         printf("  OrigFirstThunk:  %08X (Unbound IAT)\n",
       			importDesc->Characteristics);
 
-		pszTimeDate = ctime((PLONG)&importDesc->TimeDateStamp);
+		pszTimeDate = ctime((time_t *)&importDesc->TimeDateStamp);
         printf("  TimeDateStamp:   %08X", importDesc->TimeDateStamp );
 		printf( pszTimeDate ?  " -> %s" : "\n", pszTimeDate );
 
@@ -194,7 +194,7 @@ void DumpExportsSection(DWORD base, PIMAGE_NT_HEADERS pNTHeader)
     printf("  Characteristics: %08X\n", exportDir->Characteristics);
     printf("  TimeDateStamp:   %08X -> %s",
     			exportDir->TimeDateStamp,
-    			ctime((long *)&exportDir->TimeDateStamp) );
+    			ctime((time_t *)&exportDir->TimeDateStamp) );
     printf("  Version:         %u.%02u\n", exportDir->MajorVersion,
             exportDir->MinorVersion);
     printf("  Ordinal base:    %08X\n", exportDir->Base);
@@ -255,14 +255,12 @@ void DumpRuntimeFunctions( DWORD base, PIMAGE_NT_HEADERS pNTHeader )
 		return;
 
 	printf( "Runtime Function Table (Exception handling)\n" );
-	printf( "  Begin     End       Handler   HndlData  PrologEnd\n" );
-	printf( "  --------  --------  --------  --------  --------\n" );
+    printf( "  Begin     End\n" );
+    printf( "  --------  --------  --------\n" );
 
 	for ( unsigned i = 0; i < cEntries; i++, pRTFn++ )
 	{
-		printf(	"  %08X  %08X  %08X  %08X  %08X",
-			pRTFn->BeginAddress, pRTFn->EndAddress, pRTFn->ExceptionHandler,
-			pRTFn->HandlerData, pRTFn->PrologEndAddress );
+        printf( "  %08X  %08X", pRTFn->BeginAddress, pRTFn->EndAddress );
 
 		if ( g_pCOFFSymbolTable )
 		{
@@ -378,7 +376,7 @@ void DumpBoundImportDescriptors( DWORD base, PIMAGE_NT_HEADERS pNTHeader )
         printf( "  %-12s  %08X -> %s",
         		base + bidRVA + pibid->OffsetModuleName,
                 pibid->TimeDateStamp,
-                ctime((long *)&pibid->TimeDateStamp) );
+                ctime((time_t *)&pibid->TimeDateStamp) );
                             
         pibfr = MakePtr(PIMAGE_BOUND_FORWARDER_REF, pibid,
                             sizeof(IMAGE_BOUND_IMPORT_DESCRIPTOR));
@@ -388,7 +386,7 @@ void DumpBoundImportDescriptors( DWORD base, PIMAGE_NT_HEADERS pNTHeader )
             printf("    forwarder:  %-12s  %08X -> %s", 
                             base + bidRVA + pibfr->OffsetModuleName,
                             pibfr->TimeDateStamp,
-                            ctime((long *)&pibfr->TimeDateStamp) );
+                            ctime((time_t *)&pibfr->TimeDateStamp) );
             pibfr++;    // advance to next forwarder ref
                 
             // Keep the outer loop pointer up to date too!
@@ -413,7 +411,9 @@ void DumpExeFile( PIMAGE_DOS_HEADER dosHeader )
 
     // First, verify that the e_lfanew field gave us a reasonable
     // pointer, then verify the PE signature.
+#if 0
     __try
+#endif
     {
         if ( pNTHeader->Signature != IMAGE_NT_SIGNATURE )
         {
@@ -421,11 +421,13 @@ void DumpExeFile( PIMAGE_DOS_HEADER dosHeader )
             return;
         }
     }
+#if 0
     __except( TRUE )    // Should only get here if pNTHeader (above) is bogus
     {
         printf( "invalid .EXE\n");
         return;
     }
+#endif
     
     DumpHeader((PIMAGE_FILE_HEADER)&pNTHeader->FileHeader);
     printf("\n");

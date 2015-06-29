@@ -25,7 +25,7 @@ void DumpImageDbgHeader(PIMAGE_SEPARATE_DEBUG_HEADER pImageSepDbgHeader)
                 pImageSepDbgHeader->Characteristics);
     printf("  %-*s%08X -> %s", headerFieldWidth, "TimeDateStamp:",
                 pImageSepDbgHeader->TimeDateStamp,
-                ctime((long *)&pImageSepDbgHeader->TimeDateStamp) );
+                ctime((time_t *)&pImageSepDbgHeader->TimeDateStamp) );
     printf("  %-*s%08X\n", headerFieldWidth, "CheckSum:",
                 pImageSepDbgHeader->CheckSum);
     printf("  %-*s%08X\n", headerFieldWidth, "ImageBase:",

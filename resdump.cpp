@@ -11,6 +11,14 @@
 #include "extrnvar.h"
 #include "resdump.h"
 
+#ifndef max
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#endif
+
 // Function prototype (necessary because two functions recurse)
 void DumpResourceDirectory
 (

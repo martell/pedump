@@ -32,7 +32,7 @@ void DisplayArchiveMemberHeader(
 	sprintf( szDateAsLong, "%.12s", pArchHeader->Date );
 	LONG dateAsLong = atol(szDateAsLong);
 	
-    printf("  Date:     %.12s %s", pArchHeader->Date, ctime(&dateAsLong) );
+    printf("  Date:     %.12s %s", pArchHeader->Date, ctime((time_t *) &dateAsLong) );
     printf("  UserID:   %.6s\n", pArchHeader->UserID);
     printf("  GroupID:  %.6s\n", pArchHeader->GroupID);
     printf("  Mode:     %.8s\n", pArchHeader->Mode);
@@ -185,16 +185,19 @@ void DumpLibFile( LPVOID lpFileBase )
                                 thisMemberSize);
 
         // Bail out if we don't see the EndHeader signature in the next record
+#if 0
         __try
+#endif
         {
             if (strncmp( (char *)pArchHeader->EndHeader, IMAGE_ARCHIVE_END, 2))
                 break;
         }
+#if 0
         __except( TRUE )    // Should only get here if pArchHeader is bogus
         {
             fBreak = TRUE;  // Ideally, we could just put a "break;" here,
         }                   // but BC++ doesn't like it.
-        
+#endif
         if ( fBreak )   // work around BC++ problem.
             break;
     }
